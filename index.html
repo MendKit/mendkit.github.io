@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MendKit: fix, tune up and move computers</title>
+<meta name="description" content="MendKit is a free app for Windows, Mac and Linux that fixes common computer problems, moves your files to a new computer and tests hardware, and explains what it found in plain language.">
+<link rel="icon" href="img/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #eef3f1;
+  --panel: #ffffff;
+  --ink: #12272b;
+  --soft: #4a6166;
+  --line: #cbd8d4;
+  --teal: #0c7c70;
+  --teal-deep: #0a5f57;
+  --amber: #e89a1e;
+  --bench: #0f1d20;
+  --good: #1f8a4c;
+  --display: "Bricolage Grotesque", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.55; }
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--teal-deep); }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.08; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2.3rem, 4.6vw, 3.6rem); font-weight: 700; }
+h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); font-weight: 700; }
+h3 { font-size: 1.3rem; font-weight: 700; }
+p { margin: 0; }
+
+/* top bar */
+.top { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; padding-bottom: 20px; }
+.brand { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 700; font-size: 1.4rem; color: var(--ink); text-decoration: none; }
+.brand img { width: 40px; height: 40px; }
+.top nav { display: flex; gap: 26px; align-items: center; }
+.top nav a { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 1rem; }
+.top nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; gap: 10px; background: var(--teal); color: #fff; font: 700 1.1rem var(--body); padding: 16px 26px; border-radius: 12px; text-decoration: none; border: 0; cursor: pointer; }
+.btn:hover { background: var(--teal-deep); }
+.btn.quiet { background: transparent; color: var(--teal-deep); box-shadow: inset 0 0 0 2px var(--teal); }
+.btn.quiet:hover { background: #dfeeea; }
+.btn small { font-weight: 400; font-size: .85rem; opacity: .9; }
+
+/* hero */
+.hero { display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px; align-items: center; padding-top: 36px; padding-bottom: 84px; }
+.hero p.lede { font-size: 1.3rem; color: var(--soft); margin: 22px 0 30px; max-width: 30em; }
+.hero .get { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.hero .fine { margin-top: 16px; color: var(--soft); font-size: .98rem; }
+
+/* the symptom picker: the same question the app asks */
+.picker { background: var(--bench); color: #e7f1ee; border-radius: 22px; padding: 28px; box-shadow: 0 30px 60px -30px rgba(15, 29, 32, .55); }
+.picker .ask { font-family: var(--display); font-size: 1.55rem; font-weight: 700; margin-bottom: 16px; }
+.chips { display: flex; flex-wrap: wrap; gap: 9px; }
+.chips button { font: 700 1rem var(--body); color: #cfe7e2; background: #17292d; border: 1px solid #2a4449; border-radius: 999px; padding: 9px 16px; cursor: pointer; }
+.chips button:hover { border-color: #2fc4b2; }
+.chips button[aria-pressed="true"] { background: #2fc4b2; border-color: #2fc4b2; color: #06211e; }
+.answer { margin-top: 22px; border-top: 1px solid #2a4449; padding-top: 20px; min-height: 236px; }
+.answer h3 { color: #fff; font-size: 1.2rem; margin-bottom: 12px; }
+.answer ol { margin: 0; padding: 0; list-style: none; counter-reset: step; }
+.answer li { counter-increment: step; position: relative; padding: 7px 0 7px 40px; color: #cfe0dc; }
+.answer li::before { content: counter(step); position: absolute; left: 0; top: 7px; width: 26px; height: 26px; border-radius: 50%; background: #17292d; border: 1px solid #2fc4b2; color: #2fc4b2; font-weight: 700; font-size: .85rem; display: grid; place-items: center; }
+.answer .then { margin-top: 12px; color: #f2c56b; font-size: .98rem; }
+
+/* sections */
+section { padding: 84px 0; }
+section.alt { background: var(--panel); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.intro { max-width: 34em; margin-bottom: 44px; }
+.intro p { color: var(--soft); font-size: 1.15rem; margin-top: 14px; }
+
+/* what it does: three plain groups, not a wall of cards */
+.groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 3px solid var(--ink); }
+.group { padding: 28px 28px 8px 0; }
+.group + .group { padding-left: 28px; border-left: 1px solid var(--line); }
+.group h3 { margin-bottom: 18px; }
+.group dl { margin: 0; }
+.group dt { font-weight: 700; margin-top: 16px; }
+.group dd { margin: 2px 0 0; color: var(--soft); font-size: 1rem; }
+
+/* screenshots */
+.shots { display: grid; grid-template-columns: 1.25fr 1fr; gap: 28px; align-items: start; }
+.shot { margin: 0; }
+.shot img { border-radius: 14px; border: 1px solid #1f3a3f; box-shadow: 0 24px 50px -28px rgba(15, 29, 32, .6); }
+.shot figcaption { margin-top: 12px; color: var(--soft); font-size: 1rem; }
+.shots .stack { display: grid; gap: 28px; }
+
+/* two ways */
+.ways { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.way { border-left: 5px solid var(--teal); padding: 4px 0 4px 24px; }
+.way.tech { border-left-color: var(--amber); }
+.way p { color: var(--soft); margin-top: 10px; }
+.way ul { margin: 14px 0 0; padding-left: 20px; color: var(--ink); }
+.way li { margin: 5px 0; }
+
+/* promises */
+.promises { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px 48px; margin: 0; padding: 0; list-style: none; }
+.promises li { padding-left: 34px; position: relative; }
+.promises li::before { content: ""; position: absolute; left: 0; top: 6px; width: 20px; height: 20px; border-radius: 50%; background: var(--good); -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 0a10 10 0 100 20 10 10 0 000-20zm-1.4 14.3L4.3 10l1.4-1.4 2.9 2.9 5.7-5.7 1.4 1.4z"/></svg>') center/contain no-repeat; mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 0a10 10 0 100 20 10 10 0 000-20zm-1.4 14.3L4.3 10l1.4-1.4 2.9 2.9 5.7-5.7 1.4 1.4z"/></svg>') center/contain no-repeat; }
+.promises strong { display: block; }
+.promises span { color: var(--soft); font-size: 1rem; }
+
+/* downloads */
+#download { background: var(--bench); color: #e7f1ee; }
+#download .intro p { color: #a9c1bc; }
+.systems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.system { background: #15262a; border: 1px solid #2a4449; border-radius: 18px; padding: 26px; display: flex; flex-direction: column; }
+.system.mine { border-color: #2fc4b2; box-shadow: 0 0 0 1px #2fc4b2; }
+.system h3 { color: #fff; font-size: 1.5rem; }
+.system .yours { display: none; color: #2fc4b2; font-weight: 700; font-size: .95rem; margin-top: 4px; }
+.system.mine .yours { display: block; }
+.system .needs { color: #a9c1bc; font-size: .98rem; margin: 8px 0 20px; }
+.system .btn { justify-content: center; background: #2fc4b2; color: #06211e; flex-direction: column; gap: 2px; text-align: center; }
+.system .btn:hover { background: #57d6c6; }
+.system .other { margin-top: 12px; font-size: .98rem; }
+.system .other a { color: #9adfd5; }
+.system details { margin-top: 18px; border-top: 1px solid #2a4449; padding-top: 14px; color: #cfe0dc; font-size: .98rem; }
+.system summary { cursor: pointer; font-weight: 700; color: #fff; }
+.system details ol { margin: 10px 0 0; padding-left: 20px; }
+.system details li { margin: 6px 0; }
+.system code { background: #0b1619; border: 1px solid #2a4449; border-radius: 5px; padding: 1px 6px; font-size: .9rem; }
+.version { margin-top: 28px; color: #a9c1bc; font-size: .98rem; }
+
+footer { padding: 40px 0 56px; color: var(--soft); font-size: .98rem; }
+footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  body { font-size: 17px; }
+  .hero, .shots, .ways { grid-template-columns: 1fr; gap: 36px; }
+  .wrap.hero { padding-bottom: 56px; }
+  .groups, .systems, .promises { grid-template-columns: 1fr; }
+  .group, .group + .group { padding: 24px 0 8px; border-left: 0; }
+  .group + .group { border-top: 1px solid var(--line); }
+  section { padding: 60px 0; }
+  .top nav a:not(.keep) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="wrap top">
+  <a class="brand" href="#"><img src="img/icon.png" alt="">MendKit</a>
+  <nav>
+    <a href="#features">What it does</a>
+    <a href="#look">See it</a>
+    <a href="#safe">Is it safe?</a>
+    <a class="keep" href="#download">Download</a>
+  </nav>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <div>
+      <h1>Fix your computer without knowing how computers work.</h1>
+      <p class="lede">MendKit is a free app for Windows, Mac and Linux. Tell it what is wrong, it runs the right repairs, then it tells you what it found in plain words.</p>
+      <div class="get">
+        <a class="btn" id="mainDownload" href="#download">Download MendKit</a>
+        <a class="btn quiet" href="#features">See what it does</a>
+      </div>
+      <p class="fine">Free. No account, no ads, nothing to sign up for.</p>
+    </div>
+
+    <div class="picker" aria-label="Try the question MendKit asks">
+      <div class="ask">What is the problem?</div>
+      <div class="chips" id="chips" role="group" aria-label="Pick a problem"></div>
+      <div class="answer" id="answer" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <section class="alt" id="features">
+    <div class="wrap">
+      <div class="intro">
+        <h2>One app for the jobs a repair shop does</h2>
+        <p>Everything below is built in. You do not need to find, download or learn separate tools.</p>
+      </div>
+      <div class="groups">
+        <div class="group">
+          <h3>Fix problems</h3>
+          <dl>
+            <dt>One-click tune-up</dt>
+            <dd>Checks the drive, repairs system files, cleans up, scans for malware and installs updates, in the right order.</dd>
+            <dt>Internet and Wi-Fi</dt>
+            <dd>Works out whether you are on cable or Wi-Fi and finds where the connection stops.</dd>
+            <dt>Crashes and blue screens</dt>
+            <dd>Reads the crash history, names the likely cause and gives you a short repair plan.</dd>
+            <dt>Scam cleanup</dt>
+            <dd>Finds remote-control programs a scammer may have left behind and removes the ones you choose.</dd>
+            <dt>Printer, sound, Bluetooth, camera</dt>
+            <dd>A fix for each of the everyday things that stop working.</dd>
+          </dl>
+        </div>
+        <div class="group">
+          <h3>Move and protect your files</h3>
+          <dl>
+            <dt>Move to a new computer</dt>
+            <dd>Sends your files, settings and app list from the old computer to the new one over your home network.</dd>
+            <dt>Rescue files from a dead computer</dt>
+            <dd>Connect the old drive and MendKit finds each person's files and copies them over.</dd>
+            <dt>Backups</dt>
+            <dd>Back up to an external drive now, or every week by itself.</dd>
+            <dt>Erase for good</dt>
+            <dd>Wipes files or a whole drive so they cannot be recovered, before you sell or recycle.</dd>
+          </dl>
+        </div>
+        <div class="group">
+          <h3>Check and set up</h3>
+          <dl>
+            <dt>Hardware tests</dt>
+            <dd>Keyboard, screen, speakers, microphone, camera, USB ports and a heat test for the processor.</dd>
+            <dt>Is it worth fixing?</dt>
+            <dd>A straight answer on whether to keep, upgrade or replace the computer.</dd>
+            <dt>Free tools, installed for you</dt>
+            <dd>61 trusted free programs, each with a guide on how to use it.</dd>
+            <dt>Settings you can undo</dt>
+            <dd>Turn off annoyances like ads and widgets. Every change can be put back exactly as it was.</dd>
+            <dt>Updates</dt>
+            <dd>System, apps and drivers in one place.</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="look">
+    <div class="wrap">
+      <div class="intro">
+        <h2>It shows its work, in plain words</h2>
+        <p>Before anything runs you see the list of steps. Afterwards you get a result you can read, not a wall of code.</p>
+      </div>
+      <div class="shots">
+        <figure class="shot">
+          <img src="img/dashboard.png" width="1180" height="780" alt="The MendKit dashboard: details about the computer, a Fix my computer button and a list of common problems to pick from." loading="lazy">
+          <figcaption>The first screen. Pick your problem, or press one button for a full tune-up.</figcaption>
+        </figure>
+        <div class="stack">
+          <figure class="shot">
+            <img src="img/results.png" width="1180" height="780" alt="A MendKit results screen listing four checks, three passed and one with a problem, each explained in a sentence." loading="lazy">
+            <figcaption>Results. Green means fine, red needs attention, and each line says why.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="img/hardware.png" width="1180" height="780" alt="The MendKit keyboard test with the keys that have been pressed lit up green." loading="lazy">
+            <figcaption>The keyboard test lights up each key as you press it.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="wrap">
+      <div class="intro">
+        <h2>Simple for you, detailed for a technician</h2>
+        <p>One switch changes how much MendKit shows.</p>
+      </div>
+      <div class="ways">
+        <div class="way">
+          <h3>Simple mode</h3>
+          <p>For anyone. Big buttons, plain questions and results a customer can read.</p>
+          <ul>
+            <li>Pick a problem and press Start</li>
+            <li>A one-page report with a health score</li>
+            <li>"Get help" sends that report to someone you trust</li>
+          </ul>
+        </div>
+        <div class="way tech">
+          <h3>Technician mode</h3>
+          <p>For people who fix computers for a living, or want to see everything.</p>
+          <ul>
+            <li>Every command, with its full output and log</li>
+            <li>Setup profiles for new computers, backup images and drive wiping</li>
+            <li>A USB stick version that runs without installing</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="safe">
+    <div class="wrap">
+      <div class="intro">
+        <h2>Careful with your computer</h2>
+        <p>A repair tool has a lot of power. These are the rules MendKit keeps.</p>
+      </div>
+      <ul class="promises">
+        <li><strong>You see the steps first.</strong><span>Nothing runs until you press Start.</span></li>
+        <li><strong>Changes can be undone.</strong><span>Settings are recorded before they change, and a restore point is made before repairs on Windows.</span></li>
+        <li><strong>Your files are never overwritten.</strong><span>When moving or restoring, a file with the same name is kept alongside, not replaced.</span></li>
+        <li><strong>Passwords stay private.</strong><span>MendKit never reads or copies saved passwords or browser cookies.</span></li>
+        <li><strong>Erasing needs you to type ERASE.</strong><span>And the drive your computer runs from is never offered for wiping.</span></li>
+        <li><strong>No account and no tracking.</strong><span>It runs on your computer and sends nothing about you anywhere. By itself it only checks for a newer version and whether the internet is working.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="download">
+    <div class="wrap">
+      <div class="intro">
+        <h2>Download MendKit</h2>
+        <p>Free for everyone. Pick the kind of computer you have.</p>
+      </div>
+      <div class="systems">
+        <div class="system" data-os="win">
+          <h3>Windows</h3>
+          <div class="yours">This looks like your computer</div>
+          <p class="needs">Windows 10 or 11, 64-bit.</p>
+          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-Setup-0.17.1.exe">Download for Windows<small>Installer, 122 MB</small></a>
+          <details>
+            <summary>How to install</summary>
+            <ol>
+              <li>Open the file you downloaded.</li>
+              <li>Windows may say it "protected your PC" because MendKit is new. Click <b>More info</b>, then <b>Run anyway</b>.</li>
+              <li>Follow the installer, then open MendKit from the Start menu.</li>
+              <li>For repairs, click <b>Restart as administrator</b> on the first screen.</li>
+            </ol>
+          </details>
+        </div>
+        <div class="system" data-os="mac">
+          <h3>Mac</h3>
+          <div class="yours">This looks like your computer</div>
+          <p class="needs">Macs with Apple chips (M1 or newer).</p>
+          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-0.17.1-arm64.dmg">Download for Mac<small>Disk image, 122 MB</small></a>
+          <details>
+            <summary>How to install</summary>
+            <ol>
+              <li>Open the downloaded file and drag MendKit into Applications.</li>
+              <li>The first time, right-click MendKit and choose <b>Open</b>. macOS warns because the app is not yet signed with Apple.</li>
+              <li>If macOS still refuses, open System Settings, Privacy &amp; Security, and click <b>Open Anyway</b>.</li>
+            </ol>
+          </details>
+        </div>
+        <div class="system" data-os="linux">
+          <h3>Linux</h3>
+          <div class="yours">This looks like your computer</div>
+          <p class="needs">Any recent 64-bit distribution.</p>
+          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-0.17.1-x86_64.AppImage">Download for Linux<small>AppImage, 126 MB</small></a>
+          <p class="other">Or the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-0.17.1-x64.tar.gz">tar.gz archive</a> (121 MB).</p>
+          <details>
+            <summary>How to run</summary>
+            <ol>
+              <li>Make the file runnable: right-click it, Properties, allow running as a program. Or run <code>chmod +x MendKit-*.AppImage</code>.</li>
+              <li>Double-click it. Nothing is installed.</li>
+            </ol>
+          </details>
+        </div>
+      </div>
+      <p class="version">Version 0.17.1. The Windows version has had the most testing; the Mac and Linux versions are newer. Installed copies update themselves.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>MendKit. Free repair, tune-up and migration toolkit.</span>
+    <a href="#download">Download</a>
+  </div>
+</footer>
+
+<script>
+// The same question the app's first screen asks. Each answer is what MendKit really runs for it.
+const problems = [
+  { id: 'slow', label: 'It is slow', title: 'For a slow computer, MendKit will:', steps: ['Check the drive is healthy', 'List the programs that start with the computer', 'Clear out temporary files to free space', 'Scan for malware'], then: 'Each result comes with what to do next.' },
+  { id: 'net', label: 'No internet', title: 'For no internet, MendKit will:', steps: ['Check the network adapter', 'Test the link to your router', 'Test the link to the internet', 'Check that website names can be looked up', 'Clear the address cache'], then: 'You see exactly where the connection stops.' },
+  { id: 'pop', label: 'Pop-ups and ads', title: 'For pop-ups, MendKit will:', steps: ['Update the malware definitions', 'Scan for malware and adware', 'List the programs that start with the computer'], then: 'A separate check finds remote-control programs a scammer may have installed.' },
+  { id: 'crash', label: 'It keeps crashing', title: 'For crashes, MendKit will:', steps: ['Read the recent crash records', 'Check the drive is healthy', 'Repair damaged system files', 'Scan the file system for errors'], then: 'The Crash Analyzer then names the most likely cause: a driver, memory, the drive or heat.' },
+  { id: 'upd', label: 'Updates fail', title: 'For failing updates, MendKit will:', steps: ['Make a restore point', 'Reset the update service', 'Repair the system files that updates depend on'], then: 'Then you try the updates again from the Updates screen.' },
+  { id: 'print', label: 'Printer', title: 'For a printer that will not print, MendKit will:', steps: ['Clear the stuck print queue', 'Restart the printing service', 'List your printers and their status'], then: 'Then try printing again.' },
+  { id: 'sound', label: 'No sound', title: 'For no sound, MendKit will:', steps: ['Restart the sound services', 'Check the speakers and microphone are detected', 'Switch back on any that were disabled'], then: 'The speaker test in Hardware Tests plays left, then right.' }
+];
+const chips = document.getElementById('chips');
+const answer = document.getElementById('answer');
+function show(p) {
+  for (const b of chips.children) b.setAttribute('aria-pressed', b.dataset.id === p.id ? 'true' : 'false');
+  answer.innerHTML = '';
+  const h = document.createElement('h3'); h.textContent = p.title;
+  const ol = document.createElement('ol');
+  for (const s of p.steps) { const li = document.createElement('li'); li.textContent = s; ol.append(li); }
+  const t = document.createElement('p'); t.className = 'then'; t.textContent = p.then;
+  answer.append(h, ol, t);
+}
+for (const p of problems) {
+  const b = document.createElement('button');
+  b.type = 'button'; b.textContent = p.label; b.dataset.id = p.id;
+  b.addEventListener('click', () => show(p));
+  chips.append(b);
+}
+show(problems[0]);
+
+// Point the main button at the visitor's own system and mark its card.
+const ua = navigator.userAgent;
+const os = /Windows/.test(ua) ? 'win' : /Mac OS X|Macintosh/.test(ua) && !/iPhone|iPad/.test(ua) ? 'mac' : /Linux|X11/.test(ua) && !/Android/.test(ua) ? 'linux' : null;
+if (os) {
+  const card = document.querySelector('.system[data-os="' + os + '"]');
+  card.classList.add('mine');
+  const main = document.getElementById('mainDownload');
+  main.textContent = { win: 'Download for Windows', mac: 'Download for Mac', linux: 'Download for Linux' }[os];
+  main.href = card.querySelector('.btn').href;
+}
+</script>
+</body>
+</html>
