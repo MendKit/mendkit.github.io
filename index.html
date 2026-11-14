@@ -3,281 +3,362 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MendKit: fix, tune up and move computers</title>
-<meta name="description" content="MendKit is a free app for Windows, Mac and Linux that fixes common computer problems, moves your files to a new computer and tests hardware, and explains what it found in plain language.">
+<title>MendKit: free repair, tune-up and migration toolkit for Windows, Mac and Linux</title>
+<meta name="description" content="MendKit is a free app for Windows, Mac and Linux. It fixes common computer problems, tests hardware, moves files to a new computer and explains every result in plain language, with full detail for technicians.">
+<meta property="og:title" content="MendKit">
+<meta property="og:description" content="Free repair, tune-up and migration toolkit for Windows, Mac and Linux.">
+<meta property="og:image" content="https://mendkit.github.io/img/dashboard.png">
 <link rel="icon" href="img/icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
-  --paper: #eef3f1;
+  --ink: #0f1d20;
+  --ink-2: #1b2e33;
+  --paper: #f4f7f6;
   --panel: #ffffff;
-  --ink: #12272b;
-  --soft: #4a6166;
-  --line: #cbd8d4;
-  --teal: #0c7c70;
-  --teal-deep: #0a5f57;
-  --amber: #e89a1e;
-  --bench: #0f1d20;
-  --good: #1f8a4c;
-  --display: "Bricolage Grotesque", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --steel: #56696d;
+  --rule: #d3dddb;
+  --teal: #0b7d71;
+  --teal-bright: #2fc4b2;
+  --amber: #f2a93b;
+  --on-dark: #dbe8e5;
+  --on-dark-soft: #9db5b0;
+  --display: "Archivo", "Atkinson Hyperlegible", system-ui, sans-serif;
   --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 18px; line-height: 1.55; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 18px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
 img { max-width: 100%; height: auto; display: block; }
-a { color: var(--teal-deep); }
-:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; border-radius: 4px; }
-.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
-h1, h2, h3 { font-family: var(--display); line-height: 1.08; margin: 0; letter-spacing: -0.01em; }
-h1 { font-size: clamp(2.3rem, 4.6vw, 3.6rem); font-weight: 700; }
-h2 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); font-weight: 700; }
-h3 { font-size: 1.3rem; font-weight: 700; }
+a { color: var(--teal); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; border-radius: 3px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+h1, h2, h3 { font-family: var(--display); font-stretch: 115%; line-height: 1.06; margin: 0; letter-spacing: -0.015em; }
+h1 { font-size: clamp(2.3rem, 4.2vw, 3.05rem); font-weight: 800; font-stretch: 108%; }
+h2 { font-size: clamp(1.9rem, 3.4vw, 2.75rem); font-weight: 750; }
+h3 { font-size: 1.22rem; font-weight: 700; font-stretch: 108%; line-height: 1.2; letter-spacing: 0; }
 p { margin: 0; }
+.lead { font-size: 1.2rem; color: var(--steel); max-width: 36em; }
 
-/* top bar */
-.top { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; padding-bottom: 20px; }
-.brand { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 700; font-size: 1.4rem; color: var(--ink); text-decoration: none; }
-.brand img { width: 40px; height: 40px; }
-.top nav { display: flex; gap: 26px; align-items: center; }
+/* header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px 28px; max-width: 1180px; margin: 0 auto; }
+.brand { display: flex; align-items: center; gap: 11px; font: 800 1.35rem var(--display); font-stretch: 115%; color: var(--ink); text-decoration: none; }
+.brand img { width: 38px; height: 38px; }
+.top nav { display: flex; align-items: center; gap: 28px; }
 .top nav a { color: var(--ink); text-decoration: none; font-weight: 700; font-size: 1rem; }
-.top nav a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.top nav a:hover { color: var(--teal); }
+.top nav a.btn { color: #fff; padding: 10px 18px; font-size: 1rem; }
 
 /* buttons */
-.btn { display: inline-flex; align-items: center; gap: 10px; background: var(--teal); color: #fff; font: 700 1.1rem var(--body); padding: 16px 26px; border-radius: 12px; text-decoration: none; border: 0; cursor: pointer; }
-.btn:hover { background: var(--teal-deep); }
-.btn.quiet { background: transparent; color: var(--teal-deep); box-shadow: inset 0 0 0 2px var(--teal); }
-.btn.quiet:hover { background: #dfeeea; }
-.btn small { font-weight: 400; font-size: .85rem; opacity: .9; }
+.btn { display: inline-flex; flex-direction: column; align-items: flex-start; background: var(--teal); color: #fff; font: 700 1.1rem var(--body); padding: 15px 26px; border-radius: 10px; text-decoration: none; border: 0; cursor: pointer; line-height: 1.25; }
+.btn:hover { background: #096a60; }
+.btn small { font-weight: 400; font-size: .86rem; opacity: .88; }
+.btn.line { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--rule); }
+.btn.line:hover { box-shadow: inset 0 0 0 2px var(--ink); background: transparent; }
 
 /* hero */
-.hero { display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px; align-items: center; padding-top: 36px; padding-bottom: 84px; }
-.hero p.lede { font-size: 1.3rem; color: var(--soft); margin: 22px 0 30px; max-width: 30em; }
-.hero .get { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
-.hero .fine { margin-top: 16px; color: var(--soft); font-size: .98rem; }
+.hero { display: grid; grid-template-columns: 1fr 1.15fr; gap: 56px; align-items: center; padding-top: 44px; padding-bottom: 76px; }
+.hero h1 { max-width: 13em; }
+.hero .lead { margin: 22px 0 32px; }
+.hero .get { display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch; }
+.hero .fine { margin-top: 18px; color: var(--steel); font-size: .98rem; }
+.window { background: var(--ink); border-radius: 12px; padding: 0; box-shadow: 0 1px 0 #ffffff inset, 0 40px 70px -40px rgba(15, 29, 32, .55), 0 0 0 1px rgba(15, 29, 32, .12); overflow: hidden; }
+.window .bar { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; background: #16272b; color: var(--on-dark-soft); font-size: .78rem; }
+.window .bar i { width: 10px; height: 10px; border-radius: 50%; background: #2c4247; }
+.window .bar span { margin-left: 8px; }
+.window img { width: 100%; }
 
-/* the symptom picker: the same question the app asks */
-.picker { background: var(--bench); color: #e7f1ee; border-radius: 22px; padding: 28px; box-shadow: 0 30px 60px -30px rgba(15, 29, 32, .55); }
-.picker .ask { font-family: var(--display); font-size: 1.55rem; font-weight: 700; margin-bottom: 16px; }
-.chips { display: flex; flex-wrap: wrap; gap: 9px; }
-.chips button { font: 700 1rem var(--body); color: #cfe7e2; background: #17292d; border: 1px solid #2a4449; border-radius: 999px; padding: 9px 16px; cursor: pointer; }
-.chips button:hover { border-color: #2fc4b2; }
-.chips button[aria-pressed="true"] { background: #2fc4b2; border-color: #2fc4b2; color: #06211e; }
-.answer { margin-top: 22px; border-top: 1px solid #2a4449; padding-top: 20px; min-height: 236px; }
-.answer h3 { color: #fff; font-size: 1.2rem; margin-bottom: 12px; }
-.answer ol { margin: 0; padding: 0; list-style: none; counter-reset: step; }
-.answer li { counter-increment: step; position: relative; padding: 7px 0 7px 40px; color: #cfe0dc; }
-.answer li::before { content: counter(step); position: absolute; left: 0; top: 7px; width: 26px; height: 26px; border-radius: 50%; background: #17292d; border: 1px solid #2fc4b2; color: #2fc4b2; font-weight: 700; font-size: .85rem; display: grid; place-items: center; }
-.answer .then { margin-top: 12px; color: #f2c56b; font-size: .98rem; }
+/* the problem panel: what MendKit really runs */
+.bench { background: var(--ink); color: var(--on-dark); padding: 84px 0; }
+.bench h2 { color: #fff; }
+.bench .lead { color: var(--on-dark-soft); margin-top: 14px; }
+.bench-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 48px; margin-top: 40px; align-items: start; }
+.os-switch { display: inline-flex; background: #0a1517; border: 1px solid #2a4146; border-radius: 10px; padding: 4px; margin-bottom: 22px; }
+.os-switch button { font: 700 .98rem var(--body); color: var(--on-dark-soft); background: transparent; border: 0; border-radius: 7px; padding: 8px 18px; cursor: pointer; }
+.os-switch button[aria-pressed="true"] { background: var(--ink-2); color: #fff; box-shadow: inset 0 0 0 1px #35535a; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button { font: 400 1rem var(--body); color: var(--on-dark); background: transparent; border: 1px solid #2f494e; border-radius: 8px; padding: 8px 14px; cursor: pointer; text-align: left; }
+.chips button:hover { border-color: var(--teal-bright); }
+.chips button[aria-pressed="true"] { background: var(--teal-bright); border-color: var(--teal-bright); color: #062420; font-weight: 700; }
+.plan { background: var(--ink-2); border: 1px solid #2a4146; border-radius: 14px; padding: 30px 32px; min-height: 420px; }
+.plan h3 { color: #fff; font-size: 1.45rem; }
+.plan .about { color: var(--on-dark-soft); margin: 10px 0 20px; }
+.plan ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+.plan li { counter-increment: s; display: grid; grid-template-columns: 34px 1fr; padding: 9px 0; border-top: 1px solid #263c41; }
+.plan li::before { content: counter(s); color: var(--teal-bright); font-weight: 700; font-variant-numeric: tabular-nums; }
+.plan .time { margin-top: 18px; color: var(--amber); font-size: .98rem; }
 
 /* sections */
-section { padding: 84px 0; }
-section.alt { background: var(--panel); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.intro { max-width: 34em; margin-bottom: 44px; }
-.intro p { color: var(--soft); font-size: 1.15rem; margin-top: 14px; }
+section { padding: 92px 0; }
+.head { max-width: 40em; margin-bottom: 48px; }
+.head .lead { margin-top: 16px; }
 
-/* what it does: three plain groups, not a wall of cards */
-.groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 3px solid var(--ink); }
-.group { padding: 28px 28px 8px 0; }
-.group + .group { padding-left: 28px; border-left: 1px solid var(--line); }
-.group h3 { margin-bottom: 18px; }
-.group dl { margin: 0; }
-.group dt { font-weight: 700; margin-top: 16px; }
-.group dd { margin: 2px 0 0; color: var(--soft); font-size: 1rem; }
+/* feature index */
+.index { border-top: 2px solid var(--ink); }
+.area { display: grid; grid-template-columns: 300px 1fr; gap: 48px; padding: 38px 0 40px; border-bottom: 1px solid var(--rule); }
+.area > header p { color: var(--steel); margin-top: 10px; font-size: 1rem; }
+.area dl { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 26px 40px; }
+.area dt { font-weight: 700; }
+.area dd { margin: 4px 0 0; color: var(--steel); font-size: 1rem; }
+.os { display: flex; gap: 12px; margin-top: 7px; font-size: .84rem; }
+.os b { font-weight: 700; color: var(--teal); }
+.os s { color: #a9b8b6; text-decoration: none; }
 
-/* screenshots */
-.shots { display: grid; grid-template-columns: 1.25fr 1fr; gap: 28px; align-items: start; }
-.shot { margin: 0; }
-.shot img { border-radius: 14px; border: 1px solid #1f3a3f; box-shadow: 0 24px 50px -28px rgba(15, 29, 32, .6); }
-.shot figcaption { margin-top: 12px; color: var(--soft); font-size: 1rem; }
-.shots .stack { display: grid; gap: 28px; }
+/* screens */
+.screens { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.screens figure { margin: 0; }
+.screens a { display: block; border-radius: 12px; }
+.screens a:hover .window { box-shadow: 0 0 0 2px var(--teal), 0 40px 70px -40px rgba(15, 29, 32, .55); }
+.screens figcaption { margin-top: 14px; font-size: 1rem; color: var(--steel); }
+.screens figcaption strong { display: block; color: var(--ink); font-size: 1.05rem; }
 
-/* two ways */
-.ways { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-.way { border-left: 5px solid var(--teal); padding: 4px 0 4px 24px; }
-.way.tech { border-left-color: var(--amber); }
-.way p { color: var(--soft); margin-top: 10px; }
-.way ul { margin: 14px 0 0; padding-left: 20px; color: var(--ink); }
-.way li { margin: 5px 0; }
+/* modes */
+.modes { display: grid; grid-template-columns: 1fr 1fr; border-top: 2px solid var(--ink); }
+.mode { padding: 34px 40px 10px 0; }
+.mode + .mode { padding-left: 40px; border-left: 1px solid var(--rule); }
+.mode p { color: var(--steel); margin-top: 10px; }
+.mode ul { margin: 16px 0 0; padding-left: 20px; }
+.mode li { margin: 7px 0; }
+
+/* guides */
+.guides { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+.sample { background: var(--panel); border: 1px solid var(--rule); border-radius: 14px; padding: 28px 30px; }
+.sample .crumb { color: var(--steel); font-size: .9rem; }
+.sample h3 { margin: 6px 0 18px; font-size: 1.3rem; }
+.sample ol { margin: 0; padding-left: 22px; }
+.sample li { margin-bottom: 16px; }
+.note { margin-top: 7px; padding: 7px 12px; border-radius: 7px; font-size: .95rem; }
+.note.see { background: #edf2f1; }
+.note.tip { background: #e1f3f0; }
+.note.warn { background: #fcf0da; }
+.groups-list { list-style: none; margin: 26px 0 0; padding: 0; border-top: 1px solid var(--rule); }
+.groups-list li { display: grid; grid-template-columns: 1fr auto; padding: 13px 0; border-bottom: 1px solid var(--rule); }
+.groups-list span { color: var(--steel); font-variant-numeric: tabular-nums; }
+
+/* switch callout */
+.switch { background: var(--panel); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+.switch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.switch ol { margin: 0; padding: 0; list-style: none; counter-reset: s; border-top: 2px solid var(--ink); }
+.switch ol li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.switch ol li::before { content: counter(s); font: 800 1.2rem var(--display); color: var(--teal); }
+.switch ol li strong { display: block; }
+.switch ol li span { color: var(--steel); font-size: 1rem; }
 
 /* promises */
-.promises { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px 48px; margin: 0; padding: 0; list-style: none; }
-.promises li { padding-left: 34px; position: relative; }
-.promises li::before { content: ""; position: absolute; left: 0; top: 6px; width: 20px; height: 20px; border-radius: 50%; background: var(--good); -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 0a10 10 0 100 20 10 10 0 000-20zm-1.4 14.3L4.3 10l1.4-1.4 2.9 2.9 5.7-5.7 1.4 1.4z"/></svg>') center/contain no-repeat; mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 0a10 10 0 100 20 10 10 0 000-20zm-1.4 14.3L4.3 10l1.4-1.4 2.9 2.9 5.7-5.7 1.4 1.4z"/></svg>') center/contain no-repeat; }
-.promises strong { display: block; }
-.promises span { color: var(--soft); font-size: 1rem; }
+.promises { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 0; padding: 0; list-style: none; border-top: 2px solid var(--ink); }
+.promises li { padding: 26px 30px 26px 0; border-bottom: 1px solid var(--rule); }
+.promises li:not(:nth-child(3n+1)) { padding-left: 30px; border-left: 1px solid var(--rule); }
+.promises strong { display: block; margin-bottom: 6px; }
+.promises span { color: var(--steel); font-size: 1rem; }
 
 /* downloads */
-#download { background: var(--bench); color: #e7f1ee; }
-#download .intro p { color: #a9c1bc; }
+#download { background: var(--ink); color: var(--on-dark); }
+#download h2 { color: #fff; }
+#download .lead { color: var(--on-dark-soft); }
 .systems { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-.system { background: #15262a; border: 1px solid #2a4449; border-radius: 18px; padding: 26px; display: flex; flex-direction: column; }
-.system.mine { border-color: #2fc4b2; box-shadow: 0 0 0 1px #2fc4b2; }
-.system h3 { color: #fff; font-size: 1.5rem; }
-.system .yours { display: none; color: #2fc4b2; font-weight: 700; font-size: .95rem; margin-top: 4px; }
+.system { background: var(--ink-2); border: 1px solid #2a4146; border-radius: 14px; padding: 28px; display: flex; flex-direction: column; }
+.system.mine { border-color: var(--teal-bright); box-shadow: 0 0 0 1px var(--teal-bright); }
+.system h3 { color: #fff; font-size: 1.45rem; }
+.system .yours { display: none; color: var(--teal-bright); font-weight: 700; font-size: .95rem; margin-top: 4px; }
 .system.mine .yours { display: block; }
-.system .needs { color: #a9c1bc; font-size: .98rem; margin: 8px 0 20px; }
-.system .btn { justify-content: center; background: #2fc4b2; color: #06211e; flex-direction: column; gap: 2px; text-align: center; }
+.system .needs { color: var(--on-dark-soft); font-size: .98rem; margin: 8px 0 20px; }
+.system .btn { background: var(--teal-bright); color: #062420; align-items: center; text-align: center; }
 .system .btn:hover { background: #57d6c6; }
-.system .other { margin-top: 12px; font-size: .98rem; }
-.system .other a { color: #9adfd5; }
-.system details { margin-top: 18px; border-top: 1px solid #2a4449; padding-top: 14px; color: #cfe0dc; font-size: .98rem; }
+.system .other { margin-top: 14px; font-size: .97rem; color: var(--on-dark-soft); }
+.system .other a, .system details a { color: #9adfd5; }
+.system details { margin-top: 18px; border-top: 1px solid #2a4146; padding-top: 14px; font-size: .97rem; }
 .system summary { cursor: pointer; font-weight: 700; color: #fff; }
 .system details ol { margin: 10px 0 0; padding-left: 20px; }
-.system details li { margin: 6px 0; }
-.system code { background: #0b1619; border: 1px solid #2a4449; border-radius: 5px; padding: 1px 6px; font-size: .9rem; }
-.version { margin-top: 28px; color: #a9c1bc; font-size: .98rem; }
-
-footer { padding: 40px 0 56px; color: var(--soft); font-size: .98rem; }
+.system details li { margin: 7px 0; }
+.system code { background: #0a1517; border: 1px solid #2a4146; border-radius: 5px; padding: 1px 6px; font-size: .88rem; }
+.version { margin-top: 30px; color: var(--on-dark-soft); font-size: .98rem; max-width: 52em; }
+footer { padding: 36px 0 52px; color: var(--steel); font-size: .98rem; }
 footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+footer a { color: var(--steel); }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   body { font-size: 17px; }
-  .hero, .shots, .ways { grid-template-columns: 1fr; gap: 36px; }
-  .wrap.hero { padding-bottom: 56px; }
-  .groups, .systems, .promises { grid-template-columns: 1fr; }
-  .group, .group + .group { padding: 24px 0 8px; border-left: 0; }
-  .group + .group { border-top: 1px solid var(--line); }
-  section { padding: 60px 0; }
-  .top nav a:not(.keep) { display: none; }
+  .hero, .bench-grid, .guides, .switch-grid { grid-template-columns: 1fr; gap: 36px; }
+  .area { grid-template-columns: 1fr; gap: 20px; }
+  .screens, .systems { grid-template-columns: 1fr; }
+  .promises { grid-template-columns: 1fr; }
+  .promises li, .promises li:not(:nth-child(3n+1)) { padding: 20px 0; border-left: 0; }
+  .modes { grid-template-columns: 1fr; }
+  .mode, .mode + .mode { padding: 28px 0 8px; border-left: 0; }
+  .mode + .mode { border-top: 1px solid var(--rule); }
+  .top nav a:not(.btn) { display: none; }
+  section, .bench { padding: 64px 0; }
+}
+@media (max-width: 620px) {
+  .area dl { grid-template-columns: 1fr; }
+  .plan { padding: 24px 22px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
 </head>
 <body>
-
-<header class="wrap top">
+<header class="top">
   <a class="brand" href="#"><img src="img/icon.png" alt="">MendKit</a>
-  <nav>
-    <a href="#features">What it does</a>
-    <a href="#look">See it</a>
-    <a href="#safe">Is it safe?</a>
-    <a class="keep" href="#download">Download</a>
+  <nav aria-label="Sections">
+    <a href="#features">Features</a>
+    <a href="#screens">How it works</a>
+    <a href="#guides">Guides</a>
+    <a href="#safe">Safety</a>
+    <a class="btn" href="#download">Download</a>
   </nav>
 </header>
 
 <main>
   <div class="wrap hero">
     <div>
-      <h1>Fix your computer without knowing how computers work.</h1>
-      <p class="lede">MendKit is a free app for Windows, Mac and Linux. Tell it what is wrong, it runs the right repairs, then it tells you what it found in plain words.</p>
+      <h1>Fix, check and move computers, with every step explained.</h1>
+      <p class="lead">MendKit is a free toolkit for Windows, Mac and Linux. Tell it what is wrong, and it runs the right checks and repairs, then reports what it found in plain language. Technicians get the full detail underneath.</p>
       <div class="get">
-        <a class="btn" id="mainDownload" href="#download">Download MendKit</a>
-        <a class="btn quiet" href="#features">See what it does</a>
+        <a class="btn" id="mainDownload" href="#download">Download MendKit<small id="mainDownloadNote">Free for Windows, Mac and Linux</small></a>
+        <a class="btn line" href="#features">See what it does</a>
       </div>
-      <p class="fine">Free. No account, no ads, nothing to sign up for.</p>
+      <p class="fine">Free, with no account, no ads and no tracking. Version <span data-count="version">0.18.0</span>.</p>
     </div>
-
-    <div class="picker" aria-label="Try the question MendKit asks">
-      <div class="ask">What is the problem?</div>
-      <div class="chips" id="chips" role="group" aria-label="Pick a problem"></div>
-      <div class="answer" id="answer" aria-live="polite"></div>
+    <div class="window">
+      <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>MendKit</span></div>
+      <img src="img/dashboard.png" width="2360" height="1560" alt="The MendKit dashboard: the computer's name, system, processor, memory and free space, a Fix my computer button, and a list of common problems to choose from.">
     </div>
   </div>
 
-  <section class="alt" id="features">
+  <div class="bench" id="try">
     <div class="wrap">
-      <div class="intro">
-        <h2>One app for the jobs a repair shop does</h2>
-        <p>Everything below is built in. You do not need to find, download or learn separate tools.</p>
+      <h2>Start with the problem, not the tool.</h2>
+      <p class="lead">This is the question MendKit opens with. Pick a problem and a system to see the checks and repairs it runs, in order. Nothing runs until you have seen this list and pressed Start.</p>
+      <div class="bench-grid">
+        <div>
+          <div class="os-switch" role="group" aria-label="Which system">
+            <button data-os="windows" aria-pressed="true">Windows</button>
+            <button data-os="mac" aria-pressed="false">Mac</button>
+            <button data-os="linux" aria-pressed="false">Linux</button>
+          </div>
+          <div class="chips" id="chips" role="group" aria-label="What is the problem?"></div>
+        </div>
+        <div class="plan" id="plan" aria-live="polite"></div>
       </div>
-      <div class="groups">
-        <div class="group">
-          <h3>Fix problems</h3>
+    </div>
+  </div>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="head">
+        <h2>The jobs a repair bench does, in one app.</h2>
+        <p class="lead">Everything below is built in. Each feature shows the systems it works on.</p>
+      </div>
+      <div class="index">
+        <div class="area">
+          <header><h3>Diagnose and repair</h3><p>Find out what is wrong and fix it, with a safety point saved first.</p></header>
           <dl>
-            <dt>One-click tune-up</dt>
-            <dd>Checks the drive, repairs system files, cleans up, scans for malware and installs updates, in the right order.</dd>
-            <dt>Internet and Wi-Fi</dt>
-            <dd>Works out whether you are on cable or Wi-Fi and finds where the connection stops.</dd>
-            <dt>Crashes and blue screens</dt>
-            <dd>Reads the crash history, names the likely cause and gives you a short repair plan.</dd>
-            <dt>Scam cleanup</dt>
-            <dd>Finds remote-control programs a scammer may have left behind and removes the ones you choose.</dd>
-            <dt>Printer, sound, Bluetooth, camera</dt>
-            <dd>A fix for each of the everyday things that stop working.</dd>
+            <div><dt>Fix my computer</dt><dd>A full service in one click: drive check, system file repair, disk check, malware scan and cleanup, in the right order.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt><span data-count="problems">17</span> everyday problems</dt><dd>Slow, no internet, Wi-Fi dropping, printer, sound, Bluetooth, camera, updates failing, crashing and more, each with its own fix.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Crash Analyzer</dt><dd>Reads 30 days of crash records, explains blue screens and sudden shutdowns, names the likely cause and gives a repair plan.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Network check</dt><dd>Tests whichever connection is in use, cable or Wi-Fi, step by step, and shows exactly where it stops.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Is it worth fixing?</dt><dd>A keep, upgrade or replace verdict from the memory, drive, age, battery and Windows 11 readiness.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Startup repair</dt><dd>Reinstall Windows over itself keeping files and apps, or repair a Linux system that will not start, from a USB stick.</dd><div class="os"><b>Windows</b><s>Mac</s><b>Linux</b></div></div>
           </dl>
         </div>
-        <div class="group">
-          <h3>Move and protect your files</h3>
+        <div class="area">
+          <header><h3>Clean up and secure</h3><p>Free space, speed up startup, and clear out what scammers and adware leave behind.</p></header>
           <dl>
-            <dt>Move to a new computer</dt>
-            <dd>Sends your files, settings and app list from the old computer to the new one over your home network.</dd>
-            <dt>Rescue files from a dead computer</dt>
-            <dd>Connect the old drive and MendKit finds each person's files and copies them over.</dd>
-            <dt>Backups</dt>
-            <dd>Back up to an external drive now, or every week by itself.</dd>
-            <dt>Erase for good</dt>
-            <dd>Wipes files or a whole drive so they cannot be recovered, before you sell or recycle.</dd>
+            <div><dt>Remote access audit</dt><dd>Finds <span data-count="remote">39</span> remote-control programs scammers use and shows where each one is. On Windows and Linux it removes the ones you pick.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Startup items</dt><dd>Everything that starts with the computer, who made it, and a tick box to turn it off or back on.</dd><div class="os"><s>Windows</s><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Free up space</dt><dd>Caches, old update files, old phone backups, the Trash and large files, measured first so you choose what goes. On Windows, cleanup is part of Fix my computer.</dd><div class="os"><s>Windows</s><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Security checkup</dt><dd>Firewall, disk encryption, automatic security updates, remote login and other settings, with fixes for the ones that are off.</dd><div class="os"><s>Windows</s><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Drivers</dt><dd>Finds hardware with no driver and installs the right one, including NVIDIA graphics and Broadcom Wi-Fi on Linux.</dd><div class="os"><b>Windows</b><s>Mac</s><b>Linux</b></div></div>
+            <div><dt>Fix an app that will not open</dt><dd>For apps macOS calls "damaged": clears the download block and can re-sign the app for that Mac.</dd><div class="os"><s>Windows</s><b>Mac</b><s>Linux</s></div></div>
           </dl>
         </div>
-        <div class="group">
-          <h3>Check and set up</h3>
+        <div class="area">
+          <header><h3>Move and protect files</h3><p>Get someone onto a new computer without losing anything.</p></header>
           <dl>
-            <dt>Hardware tests</dt>
-            <dd>Keyboard, screen, speakers, microphone, camera, USB ports and a heat test for the processor.</dd>
-            <dt>Is it worth fixing?</dt>
-            <dd>A straight answer on whether to keep, upgrade or replace the computer.</dd>
-            <dt>Free tools, installed for you</dt>
-            <dd>61 trusted free programs, each with a guide on how to use it.</dd>
-            <dt>Settings you can undo</dt>
-            <dd>Turn off annoyances like ads and widgets. Every change can be put back exactly as it was.</dd>
-            <dt>Updates</dt>
-            <dd>System, apps and drivers in one place.</dd>
+            <div><dt>Move to a new computer</dt><dd>Files, settings, bookmarks and the app list, over the home network, between any mix of Windows, Mac and Linux.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Rescue files from a dead computer</dt><dd>Connect the old drive, and MendKit finds each person's files and copies them across.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Backups</dt><dd>Back up to an external drive now, or every week by itself, and restore on any computer.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Backup image and secure erase</dt><dd>A full image before a risky repair, and erasing files or whole drives so they cannot be recovered.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+          </dl>
+        </div>
+        <div class="area">
+          <header><h3>Test the hardware</h3><p>Prove each part works before the computer goes back to its owner.</p></header>
+          <dl>
+            <div><dt>Hands-on tests</dt><dd>Keyboard, screen, speakers, microphone, camera and every USB port, each one a click away.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Processor stress test</dt><dd>Full load for a set time while temperatures are recorded, to catch overheating and instability.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Drive health and battery</dt><dd>Each drive's own health record and the battery's wear, with a warning when either is failing.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Specs and temperatures</dt><dd>Every component and live temperatures on one page.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+          </dl>
+        </div>
+        <div class="area">
+          <header><h3>Set up and maintain</h3><p>Get a computer ready for its owner, and keep it that way.</p></header>
+          <dl>
+            <div><dt><span data-count="tools">61</span> free tools, installed for you</dt><dd>Trusted programs from their official sources, each with a step-by-step guide. On Windows and Linux they can also be saved for computers with no internet.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Settings you can undo</dt><dd><span data-count="tweaks-win">20</span> on Windows, <span data-count="tweaks-mac">35</span> on Mac and <span data-count="tweaks-linux">32</span> on Linux, for GNOME, Mint, KDE and XFCE. Each change records the old value so it can be put back exactly.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Setup profiles</dt><dd>A saved bundle of apps, tools and settings that sets up a new computer in one run.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Updates in one place</dt><dd>System, apps and drivers, plus a quiet monthly check that only speaks up when something needs attention.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+          </dl>
+        </div>
+        <div class="area">
+          <header><h3>For the technician</h3><p>The extra detail and kit a repair shop needs.</p></header>
+          <dl>
+            <div><dt>Technician USB</dt><dd>A stick with MendKit that runs without installing, <span data-count="isos">31</span> rescue and installer images, and offline tool installers.</dd><div class="os"><b>Windows</b><s>Mac</s><b>Linux</b></div></div>
+            <div><dt>Reports and logs</dt><dd>Every run kept with its full output, a one-page customer report as PDF, and a job history to export.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Undo Center</dt><dd>Every setting MendKit changed and every tool it installed, with a button to put each back.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
+            <div><dt>Get help</dt><dd>Emails the plain-language report to a technician the owner chooses. Nothing is sent until they press Send.</dd><div class="os"><b>Windows</b><b>Mac</b><b>Linux</b></div></div>
           </dl>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="look">
+  <section id="screens" style="padding-top: 0">
     <div class="wrap">
-      <div class="intro">
-        <h2>It shows its work, in plain words</h2>
-        <p>Before anything runs you see the list of steps. Afterwards you get a result you can read, not a wall of code.</p>
+      <div class="head">
+        <h2>See it before it runs. Read it after.</h2>
+        <p class="lead">Every job shows its steps first and ends with a result written for the person whose computer it is.</p>
       </div>
-      <div class="shots">
-        <figure class="shot">
-          <img src="img/dashboard.png" width="1180" height="780" alt="The MendKit dashboard: details about the computer, a Fix my computer button and a list of common problems to pick from." loading="lazy">
-          <figcaption>The first screen. Pick your problem, or press one button for a full tune-up.</figcaption>
+      <div class="screens">
+        <figure>
+          <a href="img/preview.png" aria-label="Open this screenshot full size"><div class="window"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><img src="img/preview.png" width="2360" height="1560" loading="lazy" alt="A preview of the Health report: nine steps listed in order, each with what it does and how long it takes, and a Start button."></div></a>
+          <figcaption><strong>1. The plan</strong>Each step, what it does and how long it takes. Nothing has changed yet.</figcaption>
         </figure>
-        <div class="stack">
-          <figure class="shot">
-            <img src="img/results.png" width="1180" height="780" alt="A MendKit results screen listing four checks, three passed and one with a problem, each explained in a sentence." loading="lazy">
-            <figcaption>Results. Green means fine, red needs attention, and each line says why.</figcaption>
-          </figure>
-          <figure class="shot">
-            <img src="img/hardware.png" width="1180" height="780" alt="The MendKit keyboard test with the keys that have been pressed lit up green." loading="lazy">
-            <figcaption>The keyboard test lights up each key as you press it.</figcaption>
-          </figure>
-        </div>
+        <figure>
+          <a href="img/results.png" aria-label="Open this screenshot full size"><div class="window"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><img src="img/results.png" width="2360" height="1560" loading="lazy" alt="Health report results: one problem in red, one thing to look at in amber, and seven checks passed in green, each explained in a sentence."></div></a>
+          <figcaption><strong>2. The result</strong>Green is fine, amber is worth a look, red needs fixing. Every line says why.</figcaption>
+        </figure>
+        <figure>
+          <a href="img/guide.png" aria-label="Open this screenshot full size"><div class="window"><div class="bar" aria-hidden="true"><i></i><i></i><i></i></div><img src="img/guide.png" width="2360" height="1560" loading="lazy" alt="A MendKit guide for Ventoy: numbered steps, each with what you will see and a warning box before the step that erases the USB stick."></div></a>
+          <figcaption><strong>3. The guide</strong>Step-by-step help for every job and every tool, inside the app.</figcaption>
+        </figure>
       </div>
     </div>
   </section>
 
-  <section class="alt">
+  <section style="padding-top: 0">
     <div class="wrap">
-      <div class="intro">
-        <h2>Simple for you, detailed for a technician</h2>
-        <p>One switch changes how much MendKit shows.</p>
+      <div class="head">
+        <h2>Simple for the owner. Detailed for the technician.</h2>
+        <p class="lead">One switch at the bottom of the menu changes how much MendKit shows.</p>
       </div>
-      <div class="ways">
-        <div class="way">
+      <div class="modes">
+        <div class="mode">
           <h3>Simple mode</h3>
-          <p>For anyone. Big buttons, plain questions and results a customer can read.</p>
+          <p>For anyone. Plain questions, big buttons and results a customer can read.</p>
           <ul>
-            <li>Pick a problem and press Start</li>
+            <li>Pick a problem, read the plan, press Start</li>
             <li>A one-page report with a health score</li>
-            <li>"Get help" sends that report to someone you trust</li>
+            <li>Get help sends that report to someone you trust</li>
           </ul>
         </div>
-        <div class="way tech">
+        <div class="mode">
           <h3>Technician mode</h3>
-          <p>For people who fix computers for a living, or want to see everything.</p>
+          <p>For people who fix computers for a living, or who want to see everything.</p>
           <ul>
-            <li>Every command, with its full output and log</li>
-            <li>Setup profiles for new computers, backup images and drive wiping</li>
+            <li>Every command, its live output and the full log</li>
+            <li>Repair recipes, tools, settings, setup profiles and drive wiping</li>
             <li>A USB stick version that runs without installing</li>
           </ul>
         </div>
@@ -285,31 +366,71 @@ footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wr
     </div>
   </section>
 
+  <section id="guides" style="padding-top: 0">
+    <div class="wrap guides">
+      <div>
+        <h2><span data-count="guides">106</span> guides, written for people who do not fix computers.</h2>
+        <p class="lead" style="margin-top: 16px">Every guide says what to click, what you will see next, and where to be careful. They open inside MendKit, with a button that goes straight to the right screen or installs the tool, and they print for the bench.</p>
+        <ul class="groups-list">
+          <li>Start here: the words, passwords, Terminal and USB sticks<span>8</span></li>
+          <li>Using MendKit, one guide per screen<span>24</span></li>
+          <li>Mac and Linux repairs and upgrades<span>13</span></li>
+          <li>Every tool on the Tools screen<span data-count="tool-guides">61</span></li>
+        </ul>
+      </div>
+      <div class="sample" aria-label="An example from the Ventoy guide">
+        <p class="crumb">Ventoy guide: How to use it</p>
+        <h3>Make a USB stick that starts many rescue images</h3>
+        <ol>
+          <li>Plug in the USB stick.<div class="note warn"><strong>Careful:</strong> Installing Ventoy erases everything on the stick.</div></li>
+          <li>Open Ventoy2Disk and click Yes when Windows asks.<div class="note see"><strong>You will see:</strong> a window with Device (the stick) and Install and Update buttons.</div></li>
+          <li>Check the Device box shows your USB stick: its size and name. Read it twice.<div class="note warn"><strong>Careful:</strong> if more than one drive is listed, the wrong choice erases that drive instead.</div></li>
+          <li>Click Install, then Yes to both warnings.<div class="note tip"><strong>Tip:</strong> to update Ventoy later, click Update instead: files on the stick are kept.</div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="switch" id="switch">
+    <div class="wrap switch-grid">
+      <div>
+        <h2>Windows 10 is out of support. The computer does not have to be.</h2>
+        <p class="lead" style="margin-top: 16px">Windows 10 stopped getting security updates in October 2025. For computers that cannot run Windows 11, MendKit walks through moving to Linux Mint, which looks and works much like Windows and gets updates for years.</p>
+      </div>
+      <ol>
+        <li><div><strong>Check the computer</strong><span>Memory, graphics, Wi-Fi card and anything else Linux needs a step for, with a clear verdict.</span></div></li>
+        <li><div><strong>See what replaces each app</strong><span>Every installed program, with what takes its place on Linux, so the owner decides before anything changes.</span></div></li>
+        <li><div><strong>Back up, make the USB stick, install</strong><span>Each stage is a button or a guide, screen by screen.</span></div></li>
+        <li><div><strong>Finish in one run</strong><span>Updates, drivers, media codecs, Office-compatible fonts, printers and security settings, then the files and apps come back.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
   <section id="safe">
     <div class="wrap">
-      <div class="intro">
-        <h2>Careful with your computer</h2>
-        <p>A repair tool has a lot of power. These are the rules MendKit keeps.</p>
+      <div class="head">
+        <h2>Careful with the computer in front of it.</h2>
+        <p class="lead">A repair tool has a lot of power. These are the rules MendKit keeps.</p>
       </div>
       <ul class="promises">
         <li><strong>You see the steps first.</strong><span>Nothing runs until you press Start.</span></li>
-        <li><strong>Changes can be undone.</strong><span>Settings are recorded before they change, and a restore point is made before repairs on Windows.</span></li>
-        <li><strong>Your files are never overwritten.</strong><span>When moving or restoring, a file with the same name is kept alongside, not replaced.</span></li>
-        <li><strong>Passwords stay private.</strong><span>MendKit never reads or copies saved passwords or browser cookies.</span></li>
-        <li><strong>Erasing needs you to type ERASE.</strong><span>And the drive your computer runs from is never offered for wiping.</span></li>
-        <li><strong>No account and no tracking.</strong><span>It runs on your computer and sends nothing about you anywhere. By itself it only checks for a newer version and whether the internet is working.</span></li>
+        <li><strong>Changes can be undone.</strong><span>Settings are recorded before they change, and a restore point or system snapshot is made before repairs.</span></li>
+        <li><strong>Files are never overwritten.</strong><span>When moving or restoring, a file with the same name is kept alongside, not replaced.</span></li>
+        <li><strong>Removed items are set aside.</strong><span>Programs and startup items MendKit removes go to a quarantine folder, and can be put back.</span></li>
+        <li><strong>Erasing asks you to type ERASE.</strong><span>The drive the computer runs from is never offered for wiping.</span></li>
+        <li><strong>No account and no tracking.</strong><span>It only checks for a newer version and whether the internet works. Passwords are never read or copied.</span></li>
       </ul>
     </div>
   </section>
 
   <section id="download">
     <div class="wrap">
-      <div class="intro">
+      <div class="head">
         <h2>Download MendKit</h2>
-        <p>Free for everyone. Pick the kind of computer you have.</p>
+        <p class="lead">Free for everyone. The card for your computer is highlighted.</p>
       </div>
       <div class="systems">
-        <div class="system" data-os="win">
+        <div class="system" data-os="windows">
           <h3>Windows</h3>
           <div class="yours">This looks like your computer</div>
           <p class="needs">Windows 10 or 11, 64-bit.</p>
@@ -337,13 +458,14 @@ footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wr
               <li>Open MendKit. macOS stops it the first time because MendKit is not yet registered with Apple; click <b>Done</b>.</li>
               <li>Open System Settings, Privacy &amp; Security, scroll down and click <b>Open Anyway</b> next to MendKit, then confirm.</li>
               <li>If macOS says MendKit "is damaged", open Terminal and run <code>xattr -cr /Applications/MendKit.app</code>, then open it again.</li>
+              <li>The first time it opens, MendKit lists the permissions it needs, such as Full Disk Access, and opens the right settings page for each.</li>
             </ol>
           </details>
         </div>
         <div class="system" data-os="linux">
           <h3>Linux</h3>
           <div class="yours">This looks like your computer</div>
-          <p class="needs">Any recent 64-bit distribution.</p>
+          <p class="needs">Ubuntu, Linux Mint, Debian, Fedora, openSUSE, Arch and others, 64-bit.</p>
           <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-amd64.deb">Download for Linux<small data-file="deb">Ubuntu, Mint, Debian (.deb)</small></a>
           <p class="other">Fedora or openSUSE: the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x86_64.rpm">.rpm package</a><span data-size="rpm"></span>. Other distributions: the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x86_64.AppImage">AppImage</a><span data-size="appimage"></span> or the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x64.tar.gz">tar.gz archive</a><span data-size="targz"></span>.</p>
           <details>
@@ -356,57 +478,87 @@ footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wr
           </details>
         </div>
       </div>
-      <p class="version"><span id="versionLine">The newest version.</span> The Windows version has had the most testing; the Mac and Linux versions are newer. Installed copies update themselves.</p>
+      <p class="version"><span id="versionLine">The newest version.</span> Installed copies check for updates by themselves. The Windows version has had the most real-world use; the Mac and Linux versions are newer.</p>
     </div>
   </section>
 </main>
 
 <footer>
   <div class="wrap">
-    <span>MendKit. Free repair, tune-up and migration toolkit.</span>
-    <a href="#download">Download</a>
+    <span>MendKit <span data-count="version">0.18.0</span>. A free repair, tune-up and migration toolkit for Windows, Mac and Linux.</span>
+    <span><a href="#features">Features</a> &nbsp; <a href="#guides">Guides</a> &nbsp; <a href="#download">Download</a></span>
   </div>
 </footer>
 
 <script>
-// The same question the app's first screen asks. Each answer is what MendKit really runs for it.
-const problems = [
-  { id: 'slow', label: 'It is slow', title: 'For a slow computer, MendKit will:', steps: ['Check the drive is healthy', 'List the programs that start with the computer', 'Clear out temporary files to free space', 'Scan for malware'], then: 'Each result comes with what to do next.' },
-  { id: 'net', label: 'No internet', title: 'For no internet, MendKit will:', steps: ['Check the network adapter', 'Test the link to your router', 'Test the link to the internet', 'Check that website names can be looked up', 'Clear the address cache'], then: 'You see exactly where the connection stops.' },
-  { id: 'pop', label: 'Pop-ups and ads', title: 'For pop-ups, MendKit will:', steps: ['Update the malware definitions', 'Scan for malware and adware', 'List the programs that start with the computer'], then: 'A separate check finds remote-control programs a scammer may have installed.' },
-  { id: 'crash', label: 'It keeps crashing', title: 'For crashes, MendKit will:', steps: ['Read the recent crash records', 'Check the drive is healthy', 'Repair damaged system files', 'Scan the file system for errors'], then: 'The Crash Analyzer then names the most likely cause: a driver, memory, the drive or heat.' },
-  { id: 'upd', label: 'Updates fail', title: 'For failing updates, MendKit will:', steps: ['Make a restore point', 'Reset the update service', 'Repair the system files that updates depend on'], then: 'Then you try the updates again from the Updates screen.' },
-  { id: 'print', label: 'Printer', title: 'For a printer that will not print, MendKit will:', steps: ['Clear the stuck print queue', 'Restart the printing service', 'List your printers and their status'], then: 'Then try printing again.' },
-  { id: 'sound', label: 'No sound', title: 'For no sound, MendKit will:', steps: ['Restart the sound services', 'Check the speakers and microphone are detected', 'Switch back on any that were disabled'], then: 'The speaker test in Hardware Tests plays left, then right.' }
-];
-const chips = document.getElementById('chips');
-const answer = document.getElementById('answer');
-function show(p) {
-  for (const b of chips.children) b.setAttribute('aria-pressed', b.dataset.id === p.id ? 'true' : 'false');
-  answer.innerHTML = '';
-  const h = document.createElement('h3'); h.textContent = p.title;
-  const ol = document.createElement('ol');
-  for (const s of p.steps) { const li = document.createElement('li'); li.textContent = s; ol.append(li); }
-  const t = document.createElement('p'); t.className = 'then'; t.textContent = p.then;
-  answer.append(h, ol, t);
-}
-for (const p of problems) {
-  const b = document.createElement('button');
-  b.type = 'button'; b.textContent = p.label; b.dataset.id = p.id;
-  b.addEventListener('click', () => show(p));
-  chips.append(b);
-}
-show(problems[0]);
+const DATA = /*DATA*/{"problems":[{"id":"slow","label":"It is slow","title":"Slow computer","about":"Checks the drive, startup programs and free space, scans for malware and cleans up.","on":{"windows":{"steps":["Create restore point","Check drive health","Startup apps","Update Defender definitions","Defender quick scan","Clean temp folders","Component store cleanup","List app updates"],"minutes":23},"mac":{"steps":["Disk usage","Drive health (SMART)","Memory use","Heat and slowdown","Startup and background items","Thin local snapshots","Clean up Homebrew","List macOS updates"],"minutes":11},"linux":{"steps":["Disk usage","Drive health (SMART)","Failed services","Trim system logs","Remove unused packages","Remove unused Flatpak runtimes","Slow startup report","Hardware error scan","Remove old Snap versions"],"minutes":12}}},{"id":"no-internet","label":"No internet","title":"No internet","about":"Finds where the connection stops, then clears the address cache.","on":{"windows":{"steps":["Network adapters","Reach the router","Reach the internet","Website name lookup","Flush DNS cache"],"minutes":5},"mac":{"steps":["Network adapters","Active connection","Reach the router","Reach the internet","Website name lookup","Fix the clock","Flush DNS cache","Renew the network address"],"minutes":8},"linux":{"steps":["Network adapters","Reach the router","Reach the internet","Website name lookup","Flush DNS cache","Devices without a driver"],"minutes":6}}},{"id":"wifi","label":"Wi-Fi keeps dropping","title":"Wi-Fi fix","about":"Restarts Wi-Fi and checks the connection.","on":{"windows":{"steps":["Restart Wi-Fi","Reach the router","Reach the internet"],"minutes":4},"mac":{"steps":["Restart Wi-Fi","Reach the router","Reach the internet"],"minutes":3},"linux":{"steps":["Restart Wi-Fi","Reach the router","Reach the internet","Devices without a driver","Install missing firmware"],"minutes":9}}},{"id":"popups","label":"Pop-ups or strange behaviour","title":"Pop-ups or strange behaviour","about":"Updates the virus definitions, scans for malware and lists what starts with the computer.","on":{"windows":{"steps":["Update Defender definitions","Defender quick scan","Startup apps"],"minutes":8},"mac":{"steps":["Configuration profiles","Startup and background items","Drivers and system extensions","Security settings"],"minutes":4}}},{"id":"wont-update","label":"Updates will not install","title":"Updates will not install","about":"Resets Windows Update and repairs the system files it depends on.","on":{"windows":{"steps":["Create restore point","Reset Windows Update","DISM RestoreHealth","System File Checker"],"minutes":34},"mac":{"steps":["List macOS updates","Refresh Homebrew","Check Homebrew"],"minutes":6},"linux":{"steps":["Clear stuck updates","Finish interrupted installs (dpkg)","Fix broken packages","Find broken software sources","Refresh package lists","Held-back packages","Update Snap apps","Installed kernels"],"minutes":18}}},{"id":"crashing","label":"It crashes or freezes","title":"Crashing or freezing","about":"Reads the crash history and checks the drive and system files.","on":{"windows":{"steps":["Recent crashes and errors","Check drive health","DISM CheckHealth","System File Checker","Disk check (read-only)"],"minutes":24},"mac":{"steps":["Recent crashes and errors","Why did it shut down?","Drivers and system extensions","Drive health (SMART)","Verify startup volume"],"minutes":10},"linux":{"steps":["Recent crashes and errors","Drive health (SMART)","Failed services","Errors since boot","Hardware error scan","Devices without a driver","Installed kernels"],"minutes":8}}},{"id":"printer","label":"Printer will not print","title":"Printer fix","about":"Clears stuck print jobs and restarts the print service.","on":{"windows":{"steps":["Reset the print queue","List printers"],"minutes":2},"mac":{"steps":["Restart the print service","List printers"],"minutes":2},"linux":{"steps":["Restart the print service","List printers","Printers on the network"],"minutes":3}}},{"id":"sound","label":"No sound","title":"Sound fix","about":"Restarts the sound services and checks the speakers and microphone.","on":{"windows":{"steps":["Restart the sound services","Check sound devices"],"minutes":2},"mac":{"steps":["Restart the sound system"],"minutes":1},"linux":{"steps":["Restart the sound system","Reset the sound system completely"],"minutes":2}}},{"id":"bluetooth","label":"Bluetooth will not connect","title":"Bluetooth fix","about":"Restarts Bluetooth.","on":{"windows":{"steps":["Restart Bluetooth"],"minutes":1},"mac":{"steps":["Restart Bluetooth"],"minutes":1},"linux":{"steps":["Restart Bluetooth"],"minutes":1}}},{"id":"camera","label":"Camera does not work","title":"Camera fix","about":"Checks the camera privacy switch and turns the camera back on. On a Mac it restarts the camera and clears app permissions so each app asks again.","on":{"windows":{"steps":["Check the camera"],"minutes":1},"mac":{"steps":["Restart the camera service","Reset camera permission","Reset microphone permission"],"minutes":3}}},{"id":"app-wont-open","label":"An app will not open","title":"An app will not open","about":"Installs Rosetta for Intel apps and rebuilds the list of which app opens which file. For an app macOS calls \"damaged\", use Fix an app in Repair.","on":{"mac":{"steps":["Install Rosetta","Reset \"Open With\" and default apps"],"minutes":5}}},{"id":"running-hot","label":"It runs hot or shuts down","title":"Runs hot or shuts down","about":"Reads why the Mac last shut down, whether it is slowing down from heat, memory use, crashes and the battery.","on":{"mac":{"steps":["Why did it shut down?","Heat and slowdown","Memory use","Recent crashes and errors","Battery status"],"minutes":6}}},{"id":"low-space","label":"It is out of space","title":"Low on space","about":"Measures caches, old device backups, Downloads and the Trash, and frees space held by old snapshots. Use Free up space in Repair to choose what to delete.","on":{"mac":{"steps":["Disk usage","Space used by clearable files","Thin local snapshots","Clean up Homebrew"],"minutes":6}}},{"id":"desktop-frozen","label":"The desktop froze or the panel vanished","title":"Desktop frozen or panel missing","about":"Restarts the desktop and panel without signing out.","on":{"linux":{"steps":["Restart the desktop"],"minutes":1}}},{"id":"missing-drivers","label":"Graphics or Wi-Fi not working right","title":"Missing drivers","about":"Finds hardware without a driver and installs the recommended drivers and firmware: NVIDIA graphics, Broadcom Wi-Fi and more.","on":{"linux":{"steps":["Devices without a driver","Recommended drivers","Install recommended drivers","Install the NVIDIA driver (Fedora)","Install the Broadcom Wi-Fi driver","Install missing firmware"],"minutes":37}}},{"id":"slow-startup","label":"It takes ages to start","title":"Slow to start","about":"Shows which services hold up startup and checks for hardware errors.","on":{"linux":{"steps":["Slow startup report","Hardware error scan","Failed services"],"minutes":3}}},{"id":"scanner","label":"The scanner does not work","title":"Scanner not working","about":"Installs scanner support including network scanners, and lists the scanners found.","on":{"linux":{"steps":["Set up scanners"],"minutes":4}}}],"counts":{"tools":61,"guides":106,"isos":31,"remote":39,"problems":17,"tweaks-win":20,"tweaks-mac":35,"tweaks-linux":32,"tool-guides":61,"version":"0.18.0"}}/*END*/;
 
-// The release bucket says which version is current; the download links above always give the newest files.
-const releases = 'https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev';
-fetch(releases + '/version.json', { cache: 'no-store' })
+// Say which systems each feature works on, for screen readers (the marks are visual).
+for (const el of document.querySelectorAll('.os')) {
+  const on = [...el.querySelectorAll('b')].map((b) => b.textContent);
+  el.setAttribute('role', 'note');
+  el.setAttribute('aria-label', `Works on ${on.length === 3 ? 'Windows, Mac and Linux' : on.join(' and ')}`);
+  for (const c of el.children) c.setAttribute('aria-hidden', 'true');
+}
+
+// Which computer is this? Used to pick the panel's system and the download card.
+const os = (() => {
+  const p = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent).toLowerCase();
+  if (p.includes('win')) return 'windows';
+  if (p.includes('mac')) return 'mac';
+  if (p.includes('linux') || p.includes('x11')) return 'linux';
+  return 'windows';
+})();
+
+// The problem panel: the same choices and steps as the app's first screen, generated from its definitions.
+const chips = document.getElementById('chips');
+const plan = document.getElementById('plan');
+const sw = document.querySelectorAll('.os-switch button');
+let current = os, chosen = 'slow';
+function paint() {
+  for (const b of sw) b.setAttribute('aria-pressed', b.dataset.os === current ? 'true' : 'false');
+  const list = DATA.problems.filter((p) => p.on[current]);
+  if (!list.some((p) => p.id === chosen)) chosen = list[0] ? list[0].id : null;
+  chips.replaceChildren(...list.map((p) => {
+    const b = document.createElement('button');
+    b.textContent = p.label;
+    b.setAttribute('aria-pressed', p.id === chosen ? 'true' : 'false');
+    b.onclick = () => { chosen = p.id; paint(); };
+    return b;
+  }));
+  const p = list.find((x) => x.id === chosen);
+  plan.replaceChildren();
+  if (!p) return;
+  const h = document.createElement('h3'); h.textContent = p.title;
+  const a = document.createElement('p'); a.className = 'about'; a.textContent = p.about;
+  const ol = document.createElement('ol');
+  for (const s of p.on[current].steps) { const li = document.createElement('li'); li.textContent = s; ol.append(li); }
+  const t = document.createElement('p'); t.className = 'time';
+  const m = p.on[current].minutes;
+  t.textContent = `${p.on[current].steps.length} step${p.on[current].steps.length === 1 ? '' : 's'}, usually about ${m} minute${m === 1 ? '' : 's'}. Then a plain-language result.`;
+  plan.append(h, a, ol, t);
+}
+for (const b of sw) b.onclick = () => { current = b.dataset.os; paint(); };
+if (DATA.problems) paint();
+
+// Downloads: highlight this computer's card, point the main button at it, and show the version and sizes.
+const names = { windows: 'Windows', mac: 'Mac', linux: 'Linux' };
+const card = document.querySelector(`.system[data-os="${os}"]`);
+if (card) {
+  card.classList.add('mine');
+  const main = document.getElementById('mainDownload');
+  main.href = card.querySelector('.btn').href;
+  main.firstChild.textContent = `Download for ${names[os]}`;
+  document.getElementById('mainDownloadNote').textContent = os === 'linux' ? '.deb for Ubuntu and Mint; other formats below' : 'Free. Other systems below';
+}
+fetch('https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/version.json', { cache: 'no-store' })
   .then((r) => (r.ok ? r.json() : null))
   .then((info) => {
     if (!info || !info.version) return;
     const mb = (n) => Math.round(n / 1048576) + ' MB';
     const when = info.released ? new Date(info.released).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '';
     document.getElementById('versionLine').textContent = 'Version ' + info.version + (when ? ', released ' + when + '.' : '.');
+    for (const el of document.querySelectorAll('[data-count="version"]')) el.textContent = info.version;
     for (const el of document.querySelectorAll('[data-file]')) {
       const f = info.files && info.files[el.dataset.file];
       if (f && f.size) el.textContent += ', ' + mb(f.size);
@@ -415,19 +567,10 @@ fetch(releases + '/version.json', { cache: 'no-store' })
       const f = info.files && info.files[el.dataset.size];
       if (f && f.size) el.textContent = ' (' + mb(f.size) + ')';
     }
+    const f = info.files && info.files[{ windows: 'windows', mac: 'mac', linux: 'deb' }[os]];
+    if (f && f.size) document.getElementById('mainDownloadNote').textContent = `Version ${info.version}, ${mb(f.size)}`;
   })
   .catch(() => {});
-
-// Point the main button at the visitor's own system and mark its card.
-const ua = navigator.userAgent;
-const os = /Windows/.test(ua) ? 'win' : /Mac OS X|Macintosh/.test(ua) && !/iPhone|iPad/.test(ua) ? 'mac' : /Linux|X11/.test(ua) && !/Android/.test(ua) ? 'linux' : null;
-if (os) {
-  const card = document.querySelector('.system[data-os="' + os + '"]');
-  card.classList.add('mine');
-  const main = document.getElementById('mainDownload');
-  main.textContent = { win: 'Download for Windows', mac: 'Download for Mac', linux: 'Download for Linux' }[os];
-  main.href = card.querySelector('.btn').href;
-}
 </script>
 </body>
 </html>
