@@ -313,7 +313,8 @@ footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wr
           <h3>Windows</h3>
           <div class="yours">This looks like your computer</div>
           <p class="needs">Windows 10 or 11, 64-bit.</p>
-          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-Setup-0.17.1.exe">Download for Windows<small>Installer, 122 MB</small></a>
+          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-Setup-latest.exe">Download for Windows<small data-file="windows">Installer</small></a>
+          <p class="other">Or the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-Portable-latest.exe">portable version</a><span data-size="portable"></span>: one file that runs without installing.</p>
           <details>
             <summary>How to install</summary>
             <ol>
@@ -328,7 +329,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wr
           <h3>Mac</h3>
           <div class="yours">This looks like your computer</div>
           <p class="needs">Macs with Apple chips (M1 or newer).</p>
-          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-0.17.1-arm64.dmg">Download for Mac<small>Disk image, 122 MB</small></a>
+          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-arm64.dmg">Download for Mac<small data-file="mac">Disk image</small></a>
           <details>
             <summary>How to install</summary>
             <ol>
@@ -343,8 +344,8 @@ footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wr
           <h3>Linux</h3>
           <div class="yours">This looks like your computer</div>
           <p class="needs">Any recent 64-bit distribution.</p>
-          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-0.17.1-x86_64.AppImage">Download for Linux<small>AppImage, 126 MB</small></a>
-          <p class="other">Or the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-0.17.1-x64.tar.gz">tar.gz archive</a> (121 MB).</p>
+          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x86_64.AppImage">Download for Linux<small data-file="appimage">AppImage</small></a>
+          <p class="other">Or the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x64.tar.gz">tar.gz archive</a><span data-size="targz"></span>.</p>
           <details>
             <summary>How to run</summary>
             <ol>
@@ -354,7 +355,7 @@ footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wr
           </details>
         </div>
       </div>
-      <p class="version">Version 0.17.1. The Windows version has had the most testing; the Mac and Linux versions are newer. Installed copies update themselves.</p>
+      <p class="version"><span id="versionLine">The newest version.</span> The Windows version has had the most testing; the Mac and Linux versions are newer. Installed copies update themselves.</p>
     </div>
   </section>
 </main>
@@ -395,6 +396,26 @@ for (const p of problems) {
   chips.append(b);
 }
 show(problems[0]);
+
+// The release bucket says which version is current; the download links above always give the newest files.
+const releases = 'https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev';
+fetch(releases + '/version.json', { cache: 'no-store' })
+  .then((r) => (r.ok ? r.json() : null))
+  .then((info) => {
+    if (!info || !info.version) return;
+    const mb = (n) => Math.round(n / 1048576) + ' MB';
+    const when = info.released ? new Date(info.released).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+    document.getElementById('versionLine').textContent = 'Version ' + info.version + (when ? ', released ' + when + '.' : '.');
+    for (const el of document.querySelectorAll('[data-file]')) {
+      const f = info.files && info.files[el.dataset.file];
+      if (f && f.size) el.textContent += ', ' + mb(f.size);
+    }
+    for (const el of document.querySelectorAll('[data-size]')) {
+      const f = info.files && info.files[el.dataset.size];
+      if (f && f.size) el.textContent = ' (' + mb(f.size) + ')';
+    }
+  })
+  .catch(() => {});
 
 // Point the main button at the visitor's own system and mark its card.
 const ua = navigator.userAgent;
