@@ -344,13 +344,14 @@ footer .wrap { display: flex; justify-content: space-between; gap: 24px; flex-wr
           <h3>Linux</h3>
           <div class="yours">This looks like your computer</div>
           <p class="needs">Any recent 64-bit distribution.</p>
-          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x86_64.AppImage">Download for Linux<small data-file="appimage">AppImage</small></a>
-          <p class="other">Or the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x64.tar.gz">tar.gz archive</a><span data-size="targz"></span>.</p>
+          <a class="btn" href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-amd64.deb">Download for Linux<small data-file="deb">Ubuntu, Mint, Debian (.deb)</small></a>
+          <p class="other">Fedora or openSUSE: the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x86_64.rpm">.rpm package</a><span data-size="rpm"></span>. Other distributions: the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x86_64.AppImage">AppImage</a><span data-size="appimage"></span> or the <a href="https://pub-a4ba3af629e94c87a8e9aec1b8e48df7.r2.dev/MendKit-latest-x64.tar.gz">tar.gz archive</a><span data-size="targz"></span>.</p>
           <details>
-            <summary>How to run</summary>
+            <summary>How to install</summary>
             <ol>
-              <li>Make the file runnable: right-click it, Properties, allow running as a program. Or run <code>chmod +x MendKit-*.AppImage</code>.</li>
-              <li>Double-click it. Nothing is installed.</li>
+              <li>.deb (Ubuntu, Linux Mint, Debian, Pop!_OS, Zorin): double-click the file and click Install, or run <code>sudo apt install ./MendKit-*.deb</code>. MendKit is then in the applications menu.</li>
+              <li>.rpm (Fedora, openSUSE): double-click it, or run <code>sudo dnf install ./MendKit-*.rpm</code>.</li>
+              <li>AppImage: right-click it, Properties, allow running as a program, then double-click it. On Ubuntu 22.04 and later, AppImages need one extra package first: <code>sudo apt install libfuse2t64</code> (<code>libfuse2</code> on 22.04).</li>
             </ol>
           </details>
         </div>
